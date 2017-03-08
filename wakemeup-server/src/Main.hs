@@ -39,8 +39,8 @@ commentSystem = do
     liftIO $ modifyIORef ref not
     val <- liftIO (readIORef ref)
     text $ case val of
-      False -> "Waking"
-      _     -> "Stopping"
+      False -> "Stopping"
+      _     -> "Waking"
   get "state" $ do
     getState >>= liftIO . readIORef >>= flip when (setStatus status404)
   return ()
