@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+while true; do curl -f "$1/state" || eval "$2"; done
