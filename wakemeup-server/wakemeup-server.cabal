@@ -19,18 +19,7 @@ executable wakemeup-server
   build-depends:       base >= 4.7 && < 5
                      , Spock
                      , text
+                     , warp-tls
+                     , warp
                      , http-types
---                     , transformers
---                     , monad-logger
---                     , bytestring
---                     , resourcet
---                     , hvect
---                     , time
---                     , blaze-html
---                     , clay
---                     , aeson
--- other-modules:       DB
---                    , DB.Comments
---                    , DB.Types
---                    , HTML
---                    , HTML.Comments
+  other-modules:       Config

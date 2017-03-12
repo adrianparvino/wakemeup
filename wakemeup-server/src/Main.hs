@@ -20,17 +20,22 @@
 
 module Main where
 
-import           Web.Spock.Safe hiding (SessionId)
-import           Web.Spock.Shared hiding (SessionId)
-import           Control.Monad
-import           Data.IORef
-import           Control.Monad.IO.Class
+import Web.Spock hiding (SessionId)
+import Web.Spock.Config
+import Control.Monad
+import Data.IORef
+import Control.Monad.IO.Class
 import Network.HTTP.Types.Status
+import Network.Wai.Handler.Warp
+import Network.Wai.Handler.WarpTLS
+
+import Config
 
 main = do
   ref <- newIORef False
-  let spockCfg = defaultSpockCfg () PCNoDatabase ref
-  runSpock 8080 $ spock spockCfg commentSystem
+  spockCfg <- defaultSpockCfg () PCNoDatabase ref
+  app <- spockAsApp $ spock spockCfg commentSystem
+  runTLS (tlsSettings tlsCert tlsKey) (setPort 443 $ defaultSettings) app
 
 commentSystem :: SpockM () () (IORef Bool) ()
 commentSystem = do
@@ -38,9 +43,9 @@ commentSystem = do
     ref <- getState
     liftIO $ modifyIORef ref not
     val <- liftIO (readIORef ref)
-    text $ case val of
-      False -> "Stopping"
-      _     -> "Waking"
+    text $ if val
+      then "Waking"
+      else "Stopping"
   get "state" $ do
     getState >>= liftIO . readIORef >>= flip when (setStatus status404)
   return ()
